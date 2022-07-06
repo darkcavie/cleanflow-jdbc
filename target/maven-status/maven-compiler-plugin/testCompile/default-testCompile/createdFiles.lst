@@ -1,0 +1,4 @@
+org/horus/storage/sql/AbstractDbStorageTest.class
+org/horus/storage/sql/AbstractDbStorageTest$MockDbStorage.class
+org/horus/storage/sql/AbstractDbAdapterTest$MockDbAdapter.class
+org/horus/storage/sql/AbstractDbAdapterTest.class

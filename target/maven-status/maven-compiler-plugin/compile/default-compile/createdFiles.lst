@@ -1,0 +1,5 @@
+org/horus/storage/sql/AbstractDbStorage$ConnectionSupplier.class
+org/horus/storage/sql/AbstractDbStorage$ParameterFiller.class
+org/horus/storage/sql/AbstractDbAdapter.class
+org/horus/storage/sql/AbstractDbStorage.class
+org/horus/storage/sql/AbstractDbStorage$ResultSetHandler.class
