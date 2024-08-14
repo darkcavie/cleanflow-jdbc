@@ -1,4 +1,7 @@
-package org.horus.storage.sql;
+package info.cleanflow.storage.jdbc;
+
+import info.cleanflow.storage.Storage;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,11 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.function.Consumer;
-
-import org.horus.storage.NotFoundStorageException;
-import org.horus.storage.Storage;
-import org.horus.storage.StorageException;
-import org.slf4j.Logger;
 
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -20,7 +18,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @param <K> Key transfer type
  * @param <T> Transfer type to storage
  */
-public abstract class AbstractDbStorage<K, T> implements Storage<K, T> {
+public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStorage<K, T> implements Storage<K, T> {
 
     /**
      * SQL SELECT sentence to know if a key exists
@@ -41,11 +39,6 @@ public abstract class AbstractDbStorage<K, T> implements Storage<K, T> {
      * SQL DELETE sentence to delete just one row
      */
     public static final String DELETE = "delete";
-
-    /**
-     * SQL SELECT sentence for just one row
-     */
-    public static final String GET = "get";
 
     /**
      * Logger
@@ -109,36 +102,6 @@ public abstract class AbstractDbStorage<K, T> implements Storage<K, T> {
     }
 
     @Override
-    public void getByKey(K key, Consumer<T> consumer) throws StorageException {
-        final String sentence;
-        String message;
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        checkSentences(GET);
-        sentence = sentences.get(GET);
-        try {
-            con = connectionSupplier.getConnection();
-            stmt = con.prepareStatement(sentence);
-            setKeyFields(stmt, key, 0);
-            rs = stmt.executeQuery();
-            if(rs.next()) {
-                consumer.accept(getTransfer(rs));
-            } else {
-                message = String.format("Not found result for key: %s", key);
-                throw new NotFoundStorageException(message);
-            }
-        } catch (SQLException sqlEx) {
-            message = String.format("SQL Exception getting %s", key.toString());
-            LOG.error(message, sqlEx);
-            throw new StorageException(message, sqlEx);
-        } finally {
-            tryClose(rs, stmt, con);
-        }
-    }
-
-    @Override
     public void deleteByKey(K key) throws StorageException {
         final String sentence;
         Connection con = null;
@@ -160,22 +123,6 @@ public abstract class AbstractDbStorage<K, T> implements Storage<K, T> {
             tryClose(stmt, con);
         }
     }
-
-    /**
-     * Description getter
-     * @return a description of the stored entity
-     */
-    protected abstract String getDescription();
-
-    /**
-     * Put the values of the fields who forms the key
-     * @param stmt Prepared statement to fill
-     * @param transferKey The transfer object with the values
-     * @param pos The initial parameter position
-     * @throws SQLException from the set method called
-     */
-    protected abstract void setKeyFields(final PreparedStatement stmt, final K transferKey, final int pos)
-            throws SQLException;
 
     /**
      * Put the values of the fields who does not form part of the key
