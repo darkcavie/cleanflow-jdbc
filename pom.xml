@@ -4,23 +4,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.horus</groupId>
-    <artifactId>horus-sql</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <groupId>info.cleanflow</groupId>
+    <artifactId>jdbc</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <horus.common.version>0.1-SNAPSHOT</horus.common.version>
+        <cleanflow.core.version>0.1.0-SNAPSHOT</cleanflow.core.version>
         <jupiter.version>5.8.2</jupiter.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.horus</groupId>
-            <artifactId>horus-common</artifactId>
-            <version>${horus.common.version}</version>
+            <groupId>info.cleanflow</groupId>
+            <artifactId>cleanflow-core</artifactId>
+            <version>${cleanflow.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

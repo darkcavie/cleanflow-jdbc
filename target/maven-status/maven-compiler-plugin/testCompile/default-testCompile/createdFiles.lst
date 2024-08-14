@@ -1,4 +1,4 @@
-org/horus/storage/sql/AbstractDbStorageTest.class
-org/horus/storage/sql/AbstractDbStorageTest$MockDbStorage.class
-org/horus/storage/sql/AbstractDbAdapterTest$MockDbAdapter.class
-org/horus/storage/sql/AbstractDbAdapterTest.class
+info/cleanflow/storage/jdbc/AbstractDbAdapterTest.class
+info/cleanflow/storage/jdbc/AbstractDbAdapterTest$MockDbAdapter.class
+info/cleanflow/storage/jdbc/AbstractDbStorageTest.class
+info/cleanflow/storage/jdbc/AbstractDbStorageTest$MockDbStorage.class

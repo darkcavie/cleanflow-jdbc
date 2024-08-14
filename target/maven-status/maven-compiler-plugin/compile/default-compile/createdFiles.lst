@@ -1,5 +1,7 @@
-org/horus/storage/sql/AbstractDbStorage$ConnectionSupplier.class
-org/horus/storage/sql/AbstractDbStorage$ParameterFiller.class
-org/horus/storage/sql/AbstractDbAdapter.class
-org/horus/storage/sql/AbstractDbStorage.class
-org/horus/storage/sql/AbstractDbStorage$ResultSetHandler.class
+info/cleanflow/storage/jdbc/StorageException.class
+info/cleanflow/storage/jdbc/AbstractStorage$ResultSetHandler.class
+info/cleanflow/storage/jdbc/AbstractStorage$ParameterFiller.class
+info/cleanflow/storage/jdbc/AbstractStorage.class
+info/cleanflow/storage/jdbc/AbstractReadStorage.class
+info/cleanflow/storage/jdbc/AbstractDbAdapter.class
+info/cleanflow/storage/jdbc/AbstractStorage$ConnectionSupplier.class

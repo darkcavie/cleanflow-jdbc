@@ -1,4 +1,4 @@
-package org.horus.storage.sql;
+package info.cleanflow.storage.jdbc;
 
 import org.junit.jupiter.api.Test;
 

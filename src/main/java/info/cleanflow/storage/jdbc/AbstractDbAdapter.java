@@ -1,4 +1,4 @@
-package org.horus.storage.sql;
+package info.cleanflow.storage.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

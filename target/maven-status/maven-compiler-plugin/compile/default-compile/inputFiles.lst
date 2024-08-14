@@ -1,2 +1,4 @@
-/home/adrian/Projects/horus-sql/src/main/java/org/horus/storage/sql/AbstractDbStorage.java
-/home/adrian/Projects/horus-sql/src/main/java/org/horus/storage/sql/AbstractDbAdapter.java
+/home/adrianvg/Proyectos/cleanflow-jdbc/src/main/java/info/cleanflow/storage/jdbc/AbstractStorage.java
+/home/adrianvg/Proyectos/cleanflow-jdbc/src/main/java/info/cleanflow/storage/jdbc/AbstractReadStorage.java
+/home/adrianvg/Proyectos/cleanflow-jdbc/src/main/java/info/cleanflow/storage/jdbc/AbstractDbAdapter.java
+/home/adrianvg/Proyectos/cleanflow-jdbc/src/main/java/info/cleanflow/storage/jdbc/StorageException.java

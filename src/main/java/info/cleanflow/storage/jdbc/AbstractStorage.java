@@ -7,10 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.function.Consumer;
 
-import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -18,7 +16,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @param <K> Key transfer type
  * @param <T> Transfer type to storage
  */
-public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStorage<K, T> implements Storage<K, T> {
+public abstract class AbstractStorage<K, T extends K> extends AbstractReadStorage<K, T> implements Storage<K, T> {
 
     /**
      * SQL SELECT sentence to know if a key exists
@@ -43,55 +41,28 @@ public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStor
     /**
      * Logger
      */
-    private static final Logger LOG = getLogger(AbstractDbStorage.class);
-
-    /**
-     * Map with a set of SQL sentences
-     */
-    private Map<String, String> sentences;
-
-    /**
-     * Connection supplier
-     */
-    private ConnectionSupplier connectionSupplier;
-
-    /**
-     * Sentences injector setter
-     * @param sentences the sentences for this Storage
-     */
-    public void setSentences(Map<String, String> sentences) {
-        this.sentences = requireNonNull(sentences, "The sentences map is mandatory");
-    }
-
-    /**
-     * Connection Supplier injector setter
-     * @param connectionSupplier the connection supplier
-     */
-    public void setConnectionSupplier(ConnectionSupplier connectionSupplier) {
-        this.connectionSupplier = requireNonNull(connectionSupplier, "Connection supplier is mandatory");
-    }
+    private static final Logger LOG = getLogger(AbstractStorage.class);
 
     /**
      * Store a transfer object in db
-     * @param key Key
      * @param transfer Transfer object to store
      * @throws StorageException In case of a SQL failure
      */
     @Override
-    public void upsert(K key, T transfer) throws StorageException {
+    public void upsert(T transfer) throws StorageException {
         final String sentence;
         final String checkSentence;
         Connection con = null;
 
         checkSentences(EXISTS, INSERT, UPDATE);
         try {
-            con = connectionSupplier.getConnection();
+            con = getConnection();
             con.setAutoCommit(false);
             //Insert or Update
-            checkSentence = sentences.get(EXISTS);
-            sentence = checkExist(con.prepareStatement(checkSentence), key);
+            checkSentence = getSentence(EXISTS);
+            sentence = checkExist(con.prepareStatement(checkSentence), transfer);
             //Doing upsert
-            executeUpsert(con.prepareStatement(sentence), transfer, key);
+            executeUpsert(con.prepareStatement(sentence), transfer);
             con.commit();
         } catch(SQLException sqlEx) {
             LOG.error("SQL Exception putting {}", transfer, sqlEx);
@@ -109,9 +80,9 @@ public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStor
         String message;
 
         checkSentences(DELETE);
-        sentence = sentences.get(DELETE);
+        sentence = getSentence(DELETE);
         try {
-            con = connectionSupplier.getConnection();
+            con = getConnection();
             stmt = con.prepareStatement(sentence);
             setKeyFields(stmt, key, 0);
             stmt.executeUpdate();
@@ -135,13 +106,6 @@ public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStor
             throws SQLException;
 
     /**
-     * Mapper from a Result Set to a Transfer adapter
-     * @param rs SQL Result set
-     * @return a Transfer
-     */
-    protected abstract T getTransfer(ResultSet rs);
-
-    /**
      * Determines which sentence use, INSERT or UPDATE, checking the exist
      * @param countStmt Count statement
      * @param key Key object
@@ -151,13 +115,15 @@ public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStor
      */
     protected String checkExist(PreparedStatement countStmt, final K key) throws SQLException,
             StorageException {
+        final String sentenceName;
         ResultSet rs = null;
 
         try {
             setKeyFields(countStmt, key, 0);
             rs = countStmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1) == 0 ? sentences.get(INSERT) : sentences.get(UPDATE);
+                sentenceName = rs.getInt(1) == 0 ? INSERT : UPDATE;
+                return getSentence(sentenceName);
             } else {
                 throw new StorageException("Error confirming existing ");
             }
@@ -170,15 +136,14 @@ public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStor
      * Execute a Update or Insert type sentence
      * @param upsertStmt statement
      * @param transfer value object
-     * @param key key
      * @throws SQLException from the set fields methods
      */
-    protected void executeUpsert(PreparedStatement upsertStmt, T transfer, K key) throws SQLException {
+    protected void executeUpsert(PreparedStatement upsertStmt, T transfer) throws SQLException {
         int i;
 
         try {
             i = setFields(upsertStmt, transfer);
-            setKeyFields(upsertStmt, key, i);
+            setKeyFields(upsertStmt, transfer, i);
             upsertStmt.executeUpdate();
         } finally {
             tryClose(upsertStmt);
@@ -193,9 +158,9 @@ public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStor
         ResultSet rs = null;
 
         checkSentences(sentenceName);
-        sentence = sentences.get(sentenceName);
+        sentence = getSentence(sentenceName);
         try {
-            con = connectionSupplier.getConnection();
+            con = getConnection();
             stmt = con.prepareStatement(sentence);
             parameterFiller.fillStatement(stmt);
             rs = stmt.executeQuery();
@@ -226,9 +191,9 @@ public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStor
         PreparedStatement stmt = null;
 
         checkSentences(sentenceName);
-        sentence = sentences.get(sentenceName);
+        sentence = getSentence(sentenceName);
         try {
-            con = connectionSupplier.getConnection();
+            con = getConnection();
             stmt = con.prepareStatement(sentence);
             parameterFiller.fillStatement(stmt);
             stmt.executeUpdate();
@@ -240,36 +205,6 @@ public abstract class AbstractDbStorage<K, T extends K> extends AbstractReadStor
         }
     }
 
-
-    /**
-     * Jacoco does not manage very well the try resources
-     * @param closable one or many closeable instances
-     */
-    protected void tryClose(AutoCloseable... closable) {
-        if(closable == null) {
-            return;
-        }
-        for(AutoCloseable con : closable) {
-            try {
-                if(con != null) {
-                    con.close();
-                }
-            } catch (Exception ex) {
-                LOG.warn("Error closing object", ex);
-            }
-        }
-    }
-
-    /**
-     * Check each one by one if the asked sentences exists before execution
-     * @param names the names of the sentences
-     */
-    protected void checkSentences(String... names) {
-        requireNonNull(sentences, "The sentences map is required");
-        for(String name : names) {
-            requireNonNull(sentences.get(name), String.format("%s sentences is required", name));
-        }
-    }
 
     /**
      * Connection supplier

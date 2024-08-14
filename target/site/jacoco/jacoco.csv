@@ -1,3 +1,5 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-horus-sql,org.horus.storage.sql,AbstractDbStorage,532,7,16,0,110,2,21,2,13,2
-horus-sql,org.horus.storage.sql,AbstractDbAdapter,83,6,2,0,20,2,8,2,7,2
+jdbc,info.cleanflow.storage.jdbc,AbstractStorage,337,7,6,0,75,2,11,2,8,2
+jdbc,info.cleanflow.storage.jdbc,StorageException,9,0,0,0,4,0,2,0,2,0
+jdbc,info.cleanflow.storage.jdbc,AbstractDbAdapter,83,6,2,0,20,2,8,2,7,2
+jdbc,info.cleanflow.storage.jdbc,AbstractReadStorage,171,7,10,0,36,2,12,2,7,2

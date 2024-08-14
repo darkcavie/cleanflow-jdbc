@@ -1,2 +1,2 @@
-/home/adrian/Projects/horus-sql/src/test/java/org/horus/storage/sql/AbstractDbStorageTest.java
-/home/adrian/Projects/horus-sql/src/test/java/org/horus/storage/sql/AbstractDbAdapterTest.java
+/home/adrianvg/Proyectos/cleanflow-jdbc/src/test/java/info/cleanflow/storage/jdbc/AbstractDbStorageTest.java
+/home/adrianvg/Proyectos/cleanflow-jdbc/src/test/java/info/cleanflow/storage/jdbc/AbstractDbAdapterTest.java

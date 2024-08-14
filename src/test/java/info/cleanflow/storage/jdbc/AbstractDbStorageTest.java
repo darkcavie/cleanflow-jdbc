@@ -1,14 +1,11 @@
-package org.horus.storage.sql;
+package info.cleanflow.storage.jdbc;
 
-import org.horus.storage.StorageException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.OutputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,12 +23,8 @@ class AbstractDbStorageTest {
         assertEquals("mockDescription", storage.getDescription());
     }
 
-    private static class MockDbStorage extends AbstractDbStorage<String, String> {
+    private static class MockDbStorage extends AbstractStorage<String, String> {
 
-        @Override
-        public void getByKey(String key, Supplier<OutputStream> outputStream) throws StorageException {
-
-        }
 
         @Override
         protected String getDescription() {
@@ -39,18 +32,38 @@ class AbstractDbStorageTest {
         }
 
         @Override
-        protected void setKeyFields(PreparedStatement stmt, String transferKey, int pos) throws SQLException {
+        protected void setKeyFields(PreparedStatement stmt, String transferKey, int pos) {
 
         }
 
         @Override
-        protected int setFields(PreparedStatement stmt, String transfer) throws SQLException {
+        protected int setFields(PreparedStatement stmt, String transfer) {
             return 0;
         }
 
         @Override
         protected String getTransfer(ResultSet rs) {
             return null;
+        }
+
+        @Override
+        public void update(String target) {
+
+        }
+
+        @Override
+        public void insert(String target) {
+
+        }
+
+        @Override
+        public boolean exist(String key) {
+            return false;
+        }
+
+        @Override
+        public void findAll(Consumer<String> consumer) {
+
         }
     }
 
